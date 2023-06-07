@@ -26,3 +26,15 @@ class LoginApi(Resource):
         input_data = request.get_json()
         response, status = login_user(request, input_data)
         return make_response(response, status)
+    
+
+class LogoutApi(Resource):
+    @staticmethod
+    def post() -> Response:
+        """
+        POST response method to log user out.
+        :return: JSON object
+        """
+        input_data = request.get_json()
+        response, status = logout_user(request, input_data)
+        return make_response(response, status)

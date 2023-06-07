@@ -1,7 +1,8 @@
 """Data models."""
 
+from datetime import datetime
 import uuid
-from flask_bcrypt import generate_password_hash, check_password_hash
+# from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from auth.db.db import db
@@ -20,22 +21,16 @@ class User(db.Model):
         unique=True,
         nullable=False
     )
-    login = db.Column(db.String, unique=True, nullable=False)
+    username = db.Column(db.String, unique=True, nullable=False)
+    full_name = db.Column(db.String)
     password = db.Column(db.String, nullable=False)
-
-    def __init__(self, **kwargs: str) -> None:
-        """Take in a dictionary of kw-arguments and
-        assign the values to the class attributes.
-
-        """
-        self.login = kwargs.get("login")
-        self.password = kwargs.get("password")
+    created = db.Column(db.DateTime, timezone=True, default=datetime.now)
+    modified = db.Column(db.DateTime, timezone=True)
 
     def __repr__(self) -> str:
-        """Represent a user object as a string."""
+        return f'<User {self.username}>'
 
-        return f'<User {self.login}>'
-    
+'''
     def hash_password(self) -> None:
         """
         Take the password the user entered, hash it and
@@ -52,10 +47,12 @@ class User(db.Model):
         :return: The password is being returned.
         """
         return check_password_hash(self.password, password)
-
+'''
 
 class LoginHistory(db.Model):
-    __tablename__: str = 'user_auth'
+    """A data model for user's login history."""
+
+    __tablename__: str = 'auth_history'
 
     id = db.Column(
         UUID(as_uuid=True),
@@ -65,5 +62,41 @@ class LoginHistory(db.Model):
         nullable=False
     )
     user_id = db.Column(UUID(as_uuid=True), ForeignKey(User.id))
-    user_agent = db.Column(db.String, nullable=False)
-    auth_date = db.Column(db.DateTime, nullable=False)
+    user_agent = db.Column(db.String)
+    auth_date = db.Column(db.DateTime, timezone=True)
+
+
+class Role(db.Model):
+    """A data model for roles of users."""
+
+    __tablename__ = 'roles'
+
+    id = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False
+    )
+    name = db.Column(db.String, unique=True, nullable=False)
+
+    def __repr__(self):
+        return f'<Roles {self.name}>'
+
+
+class UserRole(db.Model):
+    """A data model for a table that connects
+    a user with their role(s).
+    
+    """
+    __tablename__ = 'user_role'
+
+    id = db.Column(
+        UUID(as_uuid=True),
+        primary_key=True,
+        default=uuid.uuid4,
+        unique=True,
+        nullable=False
+    )
+    user_id = db.Column(UUID(as_uuid=True), ForeignKey(User.id))
+    role_id = db.Column(UUID(as_uuid=True), ForeignKey(Role.id))
