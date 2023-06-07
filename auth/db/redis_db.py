@@ -1,7 +1,9 @@
 import redis
 
+from auth.utils.settings import settings
 
-host = "REDIS_HOST"
-port = "REDIS_PORT"
+
+host = settings.REDIS_HOST
+port = settings.REDIS_PORT
 
 redis_app = redis.Redis(host=host, port=port, db=0)
