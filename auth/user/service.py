@@ -5,7 +5,7 @@ from auth.db.db_models import LoginHistory, User
 from flask import request
 from flask_jwt_extended import create_access_token
 from flask_jwt_extended import create_refresh_token
-from werkzeug.security import check_password_hash, generate_password_hash
+from flask_bcrypt import check_password_hash, generate_password_hash
 from utils.common import generate_response
 from utils.validation import (
     CreateLoginInputSchema, CreateRegisterInputSchema
@@ -14,18 +14,14 @@ from utils.http_code import HTTP_200_OK, HTTP_201_CREATED, HTTP_400_BAD_REQUEST
 
 
 def create_user(request, input_data):
-    """
-    It creates a new user
-    :param request: The request object
-    :param input_data: This is the data that is passed to the function
-    :return: A response object
-    """
+    """Create a new user upon signing up."""
+
     create_validation_schema = CreateRegisterInputSchema()
     errors = create_validation_schema.validate(input_data)
     if errors:
         return generate_response(message=errors)
     check_username_exists = User.query.filter_by(
-        login=input_data.get("login")
+        login=input_data.get("username")
     ).first()
     if check_username_exists:
         return generate_response(

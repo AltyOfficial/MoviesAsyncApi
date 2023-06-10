@@ -2,7 +2,7 @@
 
 from datetime import datetime
 import uuid
-# from flask_bcrypt import generate_password_hash, check_password_hash
+from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.dialects.postgresql import UUID
 from auth.db.db import db
@@ -23,14 +23,13 @@ class User(db.Model):
     )
     username = db.Column(db.String, unique=True, nullable=False)
     full_name = db.Column(db.String)
-    password = db.Column(db.String, nullable=False)
+    password_hash = db.Column(db.String, nullable=False)
     created = db.Column(db.DateTime, timezone=True, default=datetime.now)
     modified = db.Column(db.DateTime, timezone=True)
 
     def __repr__(self) -> str:
         return f'<User {self.username}>'
 
-'''
     def hash_password(self) -> None:
         """
         Take the password the user entered, hash it and
@@ -47,7 +46,7 @@ class User(db.Model):
         :return: The password is being returned.
         """
         return check_password_hash(self.password, password)
-'''
+
 
 class LoginHistory(db.Model):
     """A data model for user's login history."""

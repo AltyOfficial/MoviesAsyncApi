@@ -6,12 +6,14 @@ class CreateRegisterInputSchema(Schema):
     Login must be at least 4 characters, password at least 6 characters.
 
     """
-    login = fields.Str(required=True, validate=validate.Length(min=4))
-    password = fields.Str(required=True, validate=validate.Length(min=6))
+    username = fields.Str(required=True, validate=validate.Length(min=4, max=50))
+    password = fields.Str(required=True, validate=validate.Length(min=6, max=50))
+    full_name = fields.Str(validate=validate.Length(max=50))
+
 
 
 class CreateLoginInputSchema(Schema):
-    login = fields.Str(required=True, validate=validate.Length(min=4))
+    username = fields.Str(required=True, validate=validate.Length(min=4))
     password = fields.Str(required=True, validate=validate.Length(min=6))
 
 
